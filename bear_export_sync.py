@@ -44,8 +44,7 @@ hide_tags_in_comment_block = True  # Hide tags in HTML comments: `<!-- #mytag --
 
 # The following two lists are more or less mutually exclusive, so use only one of them.
 # (You can use both if you have some nested tags where that makes sense)
-# Also, they only work if `make_tag_folders = True`.
-only_export_these_tags = []  # Leave this list empty for all notes! See below for sample
+only_export_these_tags = ['evergreen', 'outline', 'transient', 'connection']  # Leave this list empty for all notes! See below for sample
 # only_export_these_tags = ['bear/github', 'writings'] 
 
 export_as_textbundles = False  # Exports as Textbundles with images included
@@ -177,7 +176,7 @@ def export_markdown():
         if make_tag_folders:
             file_list = sub_path_from_tag(temp_path, filename, md_text)
         else:
-            file_list.append(os.path.join(temp_path, filename))
+            file_list = only_tagged(temp_path, filename, md_text)
         if file_list:
             mod_dt = dt_conv(modified)
             md_text = hide_tags(md_text)
@@ -295,6 +294,60 @@ def sub_path_from_tag(temp_path, filename, md_text):
         if not os.path.exists(tag_path):
             os.makedirs(tag_path)
         paths.append(os.path.join(tag_path, filename))      
+    return paths
+
+# Copy pasted from sub_path_from_tag method, and made sure that we only export whitelisted tags
+def only_tagged(temp_path, filename, md_text):
+    # Get tags in note:
+    pattern1 = r'(?<!\S)\#([.\w\/\-]+)[ \n]?(?!([\/ \w]+\w[#]))'
+    pattern2 = r'(?<![\S])\#([^ \d][.\w\/ ]+?)\#([ \n]|$)'
+    if multi_tag_folders:
+        # Files copied to all tag-folders found in note
+        tags = []
+        for matches in re.findall(pattern1, md_text):
+            tag = matches[0]
+            tags.append(tag)
+        for matches2 in re.findall(pattern2, md_text):
+            tag2 = matches2[0]
+            tags.append(tag2)
+        if len(tags) == 0:
+            # No tags found, don't export
+            return []
+    else:
+        # Only folder for first tag
+        match1 =  re.search(pattern1, md_text)
+        match2 =  re.search(pattern2, md_text)
+        if match1 and match2:
+            if match1.start(1) < match2.start(1):
+                tag = match1.group(1)
+            else:
+                tag = match2.group(1)
+        elif match1:
+            tag = match1.group(1)
+        elif match2:
+            tag = match2.group(1)
+        else:
+            # No tags found, don't export
+            return []
+        tags = [tag]
+    paths = []
+    for tag in tags:
+        if tag == '/':
+            continue
+        if only_export_these_tags:
+            export = False
+            for export_tag in only_export_these_tags:
+                if tag.lower().startswith(export_tag.lower()):
+                    print('Marked as exported' + filename)
+                    export = True
+                    break
+            if not export:
+                continue
+        for no_tag in no_export_tags:
+            if tag.lower().startswith(no_tag.lower()):
+                return []
+
+        paths.append(os.path.join(temp_path, filename))      
     return paths
 
 
