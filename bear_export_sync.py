@@ -338,7 +338,6 @@ def only_tagged(temp_path, filename, md_text):
             export = False
             for export_tag in only_export_these_tags:
                 if tag.lower().startswith(export_tag.lower()):
-                    print('Marked as exported' + filename)
                     export = True
                     break
             if not export:
