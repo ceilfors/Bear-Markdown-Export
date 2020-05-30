@@ -53,6 +53,7 @@ export_as_hybrids = True  # Exports as .textbundle only if images included, othe
 export_image_repository = True  # Export all notes as md but link images to 
                                  # a common repository exported to: `assets_path` 
                                  # Only used if `export_as_textbundles = False`
+filename_url_friendly = True
 
 import os
 HOME = os.getenv('HOME', '')
@@ -414,6 +415,8 @@ def clean_title(title):
         title = "Untitled"
     title = re.sub(r'[/\\*?$@!^&\|~:\.]', r'-', title)
     title = re.sub(r'-$', r'', title)    
+    if filename_url_friendly:
+        title = re.sub(r'\s', r'_', title)
     return title.strip()
 
 
