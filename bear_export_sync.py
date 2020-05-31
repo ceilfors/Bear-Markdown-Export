@@ -41,6 +41,7 @@ make_tag_folders = False  # Exports to folders using first tag only, if `multi_t
 multi_tag_folders = False  # Copies notes to all 'tag-paths' found in note!
                           # Only active if `make_tag_folders = True`
 hide_tags_in_comment_block = True  # Hide tags in HTML comments: `<!-- #mytag -->`
+delete_tags = True  # Hide tags in HTML comments: `<!-- #mytag -->`
 
 # The following two lists are more or less mutually exclusive, so use only one of them.
 # (You can use both if you have some nested tags where that makes sense)
@@ -393,7 +394,9 @@ def write_time_stamp():
 
 def hide_tags(md_text):
     # Hide tags from being seen as H1, by placing `period+space` at start of line:
-    if hide_tags_in_comment_block:
+    if delete_tags:
+        md_text =  re.sub(r'(\n)[ \t]*(\#[^\s#].*)', "", md_text)
+    elif hide_tags_in_comment_block:
         md_text =  re.sub(r'(\n)[ \t]*(\#[^\s#].*)', r'\1<!-- \2 -->', md_text)
     else:
         md_text =  re.sub(r'(\n)[ \t]*(\#[^\s#]+)', r'\1. \2', md_text)
