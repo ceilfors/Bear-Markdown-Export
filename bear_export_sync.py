@@ -518,6 +518,8 @@ def sync_md_updates():
         '''
         for pattern in file_types:
             for filename in fnmatch.filter(filenames, pattern):
+                if filename == "README.md":
+                    continue
                 md_file = os.path.join(root, filename)
                 ts = os.path.getmtime(md_file)
                 if ts > ts_last_sync:
