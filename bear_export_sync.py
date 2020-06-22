@@ -44,7 +44,7 @@ hide_tags_in_comment_block = True  # Hide tags in HTML comments: `<!-- #mytag --
 
 # The following two lists are more or less mutually exclusive, so use only one of them.
 # (You can use both if you have some nested tags where that makes sense)
-only_export_these_tags = ['evergreen', 'outline', 'transient', 'connection']  # Leave this list empty for all notes! See below for sample
+only_export_these_tags = ['evergreen', 'transient', 'connection']  # Leave this list empty for all notes! See below for sample
 # only_export_these_tags = ['bear/github', 'writings'] 
 
 export_as_textbundles = False  # Exports as Textbundles with images included
